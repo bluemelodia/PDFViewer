@@ -8,9 +8,9 @@
 
     /// Extract the URL from the arguments passed in by JavaScript's exec function.
     NSString* url = [command.arguments objectAtIndex:0];
-    NSLog("You made it! %@", url);
+    NSLog(@"You made it! %@", url);
 
-    if (url != nil && [url.length > 0]) {
+    if (url != nil && url.length > 0) {
         pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR];
