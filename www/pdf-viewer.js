@@ -2,7 +2,7 @@ const exec = require('cordova/exec');
 
 const pdfViewer = {};
 
-viewer.openPDF = function(url, successFn, errorFn) {
+pdfViewer.openPDF = function(url, successFn, errorFn) {
     if (!url) {
         throw new Error("A non-empty url is required.");
     }
@@ -14,4 +14,4 @@ viewer.openPDF = function(url, successFn, errorFn) {
     exec(successFn, errorFn, 'PDFViewer', 'openPDFWithURL', [url]);
 };
 
-module.exports = viewer;
+module.exports = pdfViewer;
