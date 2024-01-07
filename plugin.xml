@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-plugin-pdf-viewer" version="1.0.0">
+    <name>PDFViewer</name>
+    <description>A PDF viewer</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,pdfviewer</keywords>
+    <js-module src="www/pdf-viewer.js" name="Viewer">
+        <clobbers target="viewer" />
+    </js-module>
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="PDF-Viewer">
+                <param name="ios-package" value="PDFViewer"/>
+            </feature>
+        </config-file>
+        <header-file src="src/ios/PDFViewer-BridgingHeader.h" type="BridgingHeader" />
+        <header-file src="src/ios/PDFViewer.h" />
+        <source-file src="src/ios/PDFViewer.m" />
+    </platform>
+</plugin>
