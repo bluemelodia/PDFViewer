@@ -11,6 +11,9 @@
     NSString* url = [command.arguments objectAtIndex:0];
     NSLog(@"You made it! %@", url);
 
+    PDFViewController *pdfVC = [[PDFViewController alloc] init];
+    [pdfVC loadPDFWithURL: url];
+
     if (url != nil && url.length > 0) {
         pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK];
     } else {

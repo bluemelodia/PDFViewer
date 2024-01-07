@@ -26,9 +26,9 @@ class PDFViewController: UIViewController {
     }
 
     func loadPDFWithURL(url: String) {
-        if let document = PDFDocument(url: ) {
-            pdfView.document = document
-        }
+//        if let document = PDFDocument(url: ) {
+//            pdfView.document = document
+//        }
     }
 
     private func createPDF(url: String) -> Data {
