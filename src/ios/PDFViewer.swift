@@ -10,13 +10,11 @@ import UIKit
 import WebKit
 
 class PDFViewController: UIViewController {
-    private var url: String
-    private let pdfView: PDFView
+    private var url = ""
+    private let pdfView = PDFView()
 
-    func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
-
-        pdfView = PDFView()
 
         pdfView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pdfView)
