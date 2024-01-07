@@ -19,8 +19,9 @@
                 <param name="onload" value="true" />
             </feature>
         </config-file>
-        <header-file src="src/ios/CDVPDFViewer-BridgingHeader.h" type="BridgingHeader" />
+        <header-file src="src/ios/PDFViewer-Swift.h" type="BridgingHeader" />
         <header-file src="src/ios/CDVPDFViewer.h" />
         <source-file src="src/ios/CDVPDFViewer.m" />
+        <source-file src="src/ios/PDFViewer.swift" />
     </platform>
 </plugin>
