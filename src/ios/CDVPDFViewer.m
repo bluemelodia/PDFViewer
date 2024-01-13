@@ -1,6 +1,6 @@
 #import "CDVPDFViewer.h"
 #import <Cordova/CDVPlugin.h>
-#import <PDFViewer-Swift.h>
+#import ”PDFViewer-Swift.h“
 
 @implementation CDVPDFViewer
 
