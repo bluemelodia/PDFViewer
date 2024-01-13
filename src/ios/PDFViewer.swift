@@ -63,7 +63,7 @@ class PDFViewController: UIViewController {
 
             let text = "Hello I am your first PDF"
             /// Draws the string to the current context.
-            text.draw(at: CGPoint(x: 0, y:0), wtihAttributes: attributes)
+            text.draw(at: CGPoint(x: 0, y:0), withAttributes: attributes)
         }
 
         return data
