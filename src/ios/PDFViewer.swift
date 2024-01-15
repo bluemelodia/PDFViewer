@@ -9,7 +9,7 @@ import PDFKit
 import UIKit
 import WebKit
 
-class PDFViewController: UIViewController {
+@objc class PDFViewController: UIViewController {
     private var url = ""
     private let pdfView = PDFView()
 
