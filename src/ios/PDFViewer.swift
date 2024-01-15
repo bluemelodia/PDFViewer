@@ -9,7 +9,7 @@ import PDFKit
 import UIKit
 import WebKit
 
-@objc class PDFViewer: NSObject {
+@objc public class PDFViewer: NSObject {
     private var url = ""
 
     func loadPDFWithURL(url: String) {
