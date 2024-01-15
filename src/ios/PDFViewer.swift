@@ -9,21 +9,8 @@ import PDFKit
 import UIKit
 import WebKit
 
-@objc class PDFViewController: UIViewController {
+@objc class PDFViewer: NSObject {
     private var url = ""
-    private let pdfView = PDFView()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        pdfView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(pdfView)
-
-        pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-    }
 
     func loadPDFWithURL(url: String) {
 //        if let document = PDFDocument(url: ) {
@@ -70,3 +57,18 @@ import WebKit
     }
 }
 
+private class PDFViewController: UIViewController {
+    private let pdfView = PDFView()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        pdfView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pdfView)
+
+        pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+        pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+    }
+}

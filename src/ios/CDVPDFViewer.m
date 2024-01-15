@@ -11,7 +11,7 @@
     NSString* url = [command.arguments objectAtIndex:0];
     NSLog(@"You made it! %@", url);
 
-    PDFViewController *pdfVC = [[PDFViewController alloc] init];
+    PDFViewer *pdfVC = [[PDFViewer alloc] init];
     [pdfVC loadPDFWithURL: url];
 
     if (url != nil && url.length > 0) {
