@@ -11,7 +11,7 @@ import WebKit
     /// - Returns: an object of type CDVPlugin result, so the Cordova bridge can execute
     ///     the success or error JavaScript callbacks. It will pass any return values from the native
     ///     code across the JavaScript - native bridge.
-    @objc func openPDFWithURL(command: CDVInvokedUrlCommand) {
+    @objc(openPDFWithURL:) func openPDFWithURL(command: CDVInvokedUrlCommand) {
         var pluginResult: CDVPluginResult
 
         /// Extract the URL from the arguments passed in by JavaScript's exec function.
