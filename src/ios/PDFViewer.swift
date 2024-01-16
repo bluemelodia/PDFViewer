@@ -15,8 +15,7 @@ import WebKit
         var pluginResult: CDVPluginResult
 
         /// Extract the URL from the arguments passed in by JavaScript's exec function.
-        if let urlString = command.arguments[0] as? String,
-           let url = URL(string: urlString) {
+        if let url = command.arguments[0] as? String {
             print("The url is: \(url)")
             loadPDFWithURL(url: url)
 
