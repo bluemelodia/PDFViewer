@@ -16,7 +16,7 @@ import WebKit
 
         /// Extract the URL from the arguments passed in by JavaScript's exec function.
         if let urlString = command.arguments[0] as? String,
-           let url = URL(url: urlString) {
+           let url = URL(string: urlString) {
             print("The url is: \(url)")
             loadPDFWithURL(url: url)
 
