@@ -29,6 +29,10 @@ import WebKit
     func loadPDFWithURL(url: String) {
         let pdfCreator = PDFViewController()
         pdfCreator.documentData = createPDF(url: url)
+
+        self.viewController.addChild(pdfCreator)
+        self.webView.addSubview(pdfCreator.view)
+        pdfCreator.didMove(toParent: self.viewController)
     }
 
     private func createPDF(url: String) -> Data {
