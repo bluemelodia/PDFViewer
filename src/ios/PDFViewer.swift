@@ -3,8 +3,6 @@ import UIKit
 import WebKit
 
 @objc(PDFViewer) class PDFViewer: CDVPlugin {
-    private var url = ""
-
     /// Creates a PDF and displays the contents of hte provided URL.
     /// - Parameter command: an object that represents the calling context and arguments
     ///     from the Cordova webView
@@ -29,9 +27,8 @@ import WebKit
     }
 
     func loadPDFWithURL(url: String) {
-//        if let document = PDFDocument(url: ) {
-//            pdfView.document = document
-//        }
+        let pdfCreator = PDFViewController()
+        pdfCreator.documentData = createPDF(url: url)
     }
 
     private func createPDF(url: String) -> Data {
@@ -75,6 +72,7 @@ import WebKit
 
 private class PDFViewController: UIViewController {
     private let pdfView = PDFView()
+    public var documentData: Data?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,7 +84,11 @@ private class PDFViewController: UIViewController {
         pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
         pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+
+        if let data = documentData {
+            pdfView.document = PDFDocument(data: data)
+            pdfView.autoScales = true
+        }
     }
 }
-
 
