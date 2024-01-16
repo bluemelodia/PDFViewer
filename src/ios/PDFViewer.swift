@@ -12,10 +12,11 @@ import WebKit
     ///     the success or error JavaScript callbacks. It will pass any return values from the native
     ///     code across the JavaScript - native bridge.
     @objc func openPDFWithURL(command: CDVInvokedUrlCommand) -> CDVPluginResult {
-        var pluginResult = CDVPluginResult
+        var pluginResult: CDVPluginResult
 
         /// Extract the URL from the arguments passed in by JavaScript's exec function.
-        if let url = command.arguments[0] {
+        if let urlString = command.arguments[0] as? String,
+           let url = URL(url: urlString) {
             print("The url is: \(url)")
             loadPDFWithURL(url: url)
 
