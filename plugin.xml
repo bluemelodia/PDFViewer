@@ -12,18 +12,13 @@
         <config-file target="config.xml" parent="/*">
             <!-- matches the JavaScript exec call's service parameter. -->
             <feature name="PDFViewer">
-                <!-- value matches the name of the plugin's Objective-C class. -->
-                <param name="ios-package" value="CDVPDFViewer" />
+                <!-- value matches the name of the plugin's Objective-C / Swift class. -->
+                <param name="ios-package" value="PDFViewer" />
                 <!-- plugin is instantiated even before they are referenced by a
                 call from JavaScript. -->
                 <param name="onload" value="true" />
             </feature>
         </config-file>
-        <header-file src="src/ios/PDFViewer-Swift.h" type="BridgingHeader" />
-        <header-file src="src/ios/CDVPDFViewer.h" />
-        <source-file src="src/ios/CDVPDFViewer.m" />
         <source-file src="src/ios/PDFViewer.swift" />
-
-        <dependency id="cordova-plugin-add-swift-support" version="2.0.2"/>
     </platform>
 </plugin>

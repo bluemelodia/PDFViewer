@@ -1,16 +1,32 @@
-//
-//  PDFViewer.swift
-//  Highlights
-//
-//  Created by Guac on 1/7/24.
-//
-
 import PDFKit
 import UIKit
 import WebKit
 
-@objc public class PDFViewer: NSObject {
+@objc(PDFViewer) class PDFViewer: CDVPlugin {
     private var url = ""
+
+    /// Creates a PDF and displays the contents of hte provided URL.
+    /// - Parameter command: an object that represents the calling context and arguments
+    ///     from the Cordova webView
+    /// - Returns: an object of type CDVPlugin result, so the Cordova bridge can execute
+    ///     the success or error JavaScript callbacks. It will pass any return values from the native
+    ///     code across the JavaScript - native bridge.
+    @objc func openPDFWithURL(command: CDVInvokedUrlCommand) -> CDVPluginResult {
+        var pluginResult = CDVPluginResult
+
+        /// Extract the URL from the arguments passed in by JavaScript's exec function.
+        if let url = command.arguments[0] {
+            print("The url is: \(url)")
+            loadPDFWithURL(url: url)
+
+            pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
+        } else {
+            pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+        }
+
+        /// Tell the cordova app the result of executing the plugin function.
+        self.commandDelegate?.send(pluginResult, callbackId: command.callbackId)
+    }
 
     func loadPDFWithURL(url: String) {
 //        if let document = PDFDocument(url: ) {
@@ -72,3 +88,5 @@ private class PDFViewController: UIViewController {
         pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
 }
+
+
