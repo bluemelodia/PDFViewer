@@ -15,7 +15,7 @@ import WebKit
     ///     the success or error JavaScript callbacks. It will pass any return values from the native
     ///     code across the JavaScript - native bridge.
     @objc(launch:) func launch(command: CDVInvokedUrlCommand) {
-        var pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
+        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
 
         Task { @MainActor in
             launch()
