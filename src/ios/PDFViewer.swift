@@ -3,50 +3,30 @@ import SwiftUI
 import UIKit
 import WebKit
 
-enum PDFLoadError: Error {
-    case failedToLoadData(errorDescription: String)
-    case invalidFileFormat(url: String)
-    case invalidURL(url: String?)
-}
-
 /// Example invocation:
-///     window.viewer.openPDF("https://www.africau.edu/images/default/sample.pdf")
+///     window.viewer.launch()
 @objc(PDFViewer) class PDFViewer: CDVPlugin {
     let wkWebView = WKWebView()
 
-    /// Creates a PDF and displays the contents of hte provided URL.
+    /// Launches the PDF app.
     /// - Parameter command: an object that represents the calling context and arguments
     ///     from the Cordova webView
     /// - Returns: an object of type CDVPlugin result, so the Cordova bridge can execute
     ///     the success or error JavaScript callbacks. It will pass any return values from the native
     ///     code across the JavaScript - native bridge.
-    @objc(openPDFWithURL:) func openPDFWithURL(command: CDVInvokedUrlCommand) {
-        var pluginResult: CDVPluginResult
+    @objc(launch:) func launch(command: CDVInvokedUrlCommand) {
+        var pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
 
-        /// Extract the URL from the arguments passed in by JavaScript's exec function.
-        if let url = command.arguments[0] as? String {
-            do {
-                try loadPDFWithURL(url: url)
-                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-            } catch {
-                pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
-            }
-
-        } else {
-            pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+        Task { @MainActor in
+            launch()
         }
 
         /// Tell the cordova app the result of executing the plugin function.
         self.commandDelegate?.send(pluginResult, callbackId: command.callbackId)
     }
 
-    func loadPDFWithURL(url: String) throws {
-        guard url.hasSuffix(".pdf") == true else {
-            throw PDFLoadError.invalidFileFormat(url: url)
-        }
-
+    func launch() {
         let childVC = ViewController()
-        childVC.urlString = url
 
         self.viewController.addChild(childVC)
         self.webView.addSubview(childVC.view)
@@ -56,7 +36,6 @@ enum PDFLoadError: Error {
 
 private class ViewController: UIViewController {
     let contentView = UIHostingController(rootView: ContentView())
-    public var urlString: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,6 +55,14 @@ private class ViewController: UIViewController {
         contentView.view.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     }
 }
+
+/*
+ enum PDFLoadError: Error {
+     case failedToLoadData(errorDescription: String)
+     case invalidFileFormat(url: String)
+     case invalidURL(url: String?)
+ }
+
 
 private class PDFViewController: UIViewController {
     private var pdfView: PDFView?
@@ -109,4 +96,4 @@ private class PDFViewController: UIViewController {
         }
     }
 }
-
+*/
