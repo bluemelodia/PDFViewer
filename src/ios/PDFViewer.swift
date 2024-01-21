@@ -1,4 +1,5 @@
 import PDFKit
+import SwiftUI
 import UIKit
 import WebKit
 
@@ -8,6 +9,8 @@ enum PDFLoadError: Error {
     case invalidURL(url: String?)
 }
 
+/// Example invocation:
+///     window.viewer.openPDF("https://www.africau.edu/images/default/sample.pdf")
 @objc(PDFViewer) class PDFViewer: CDVPlugin {
     let wkWebView = WKWebView()
 
@@ -42,36 +45,35 @@ enum PDFLoadError: Error {
             throw PDFLoadError.invalidFileFormat(url: url)
         }
 
-        let pdfCreator = PDFViewController()
-        pdfCreator.urlString = url
-        self.viewController.addChild(pdfCreator)
-        self.webView.addSubview(pdfCreator.view)
-        pdfCreator.didMove(toParent: self.viewController)
+        let childVC = ViewController()
+        childVC.urlString = url
+
+        self.viewController.addChild(childVC)
+        self.webView.addSubview(childVC.view)
+        childVC.didMove(toParent: self.viewController)
+    }
+}
+
+private class ViewController: UIViewController {
+    let contentView = UIHostingController(rootView: ContentView())
+    public var urlString: String?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        /// UIHostingController itself is not a view, so we can't just add the whole thing to the view sub-stack.
+        /// Adding the hosting controller as a child to the view controller is needed to display the view.
+        /// Additionally, you need to set up the constraints.
+        addChild(contentView)
+        view.addSubview(contentView.view)
+        setupConstraints()
     }
 
-    func savePDF() {
-        /// Create a print formatter object
-        let printFormatter = wkWebView.viewPrintFormatter()
-        /// Create renderer, which renders the print formatter's content on pages
-        let renderer = UIPrintPageRenderer()
-        renderer.addPrintFormatter(printFormatter, startingAtPageAt: 0)
-
-        /// Create a data object to store PDF data
-        let pdfData = NSMutableData()
-        /// Start a PDF graphics context. This makes it the current drawing context, and
-        /// every drawing command after is captured and turned to PDF data.
-        UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
-
-        /// Loop through the number of pages the renderer says it has, and on each
-        /// iteration it starts a new PDF page.
-        for i in 0..<renderer.numberOfPages {
-            UIGraphicsBeginPDFPage()
-            /// draw the content of the page
-            renderer.drawPage(at: i, in: UIGraphicsGetPDFContextBounds())
-        }
-
-        /// Close PDF graphics context
-        UIGraphicsEndPDFContext()
+    fileprivate func setupConstraints() {
+        contentView.view.translatesAutoresizingMaskIntoConstraints = false
+        contentView.view.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        contentView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        contentView.view.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        contentView.view.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     }
 }
 
