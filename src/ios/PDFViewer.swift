@@ -3,11 +3,13 @@ import UIKit
 import WebKit
 
 enum PDFLoadError: Error {
+    case failedToLoadData(errorDescription: String)
+    case invalidFileFormat(url: String)
     case invalidURL(url: String?)
 }
 
 @objc(PDFViewer) class PDFViewer: CDVPlugin {
-    let webView = WKWebView()
+    let wkWebView = WKWebView()
 
     /// Creates a PDF and displays the contents of hte provided URL.
     /// - Parameter command: an object that represents the calling context and arguments
@@ -36,15 +38,20 @@ enum PDFLoadError: Error {
     }
 
     func loadPDFWithURL(url: String) throws {
-        /// Load a website into the web view
-        guard let url = URL(string: url) else {
-            throw PDFLoadError.invalidURL(url: url)
+        guard url.hasSuffix(".pdf") == true else {
+            throw PDFLoadError.invalidFileFormat(url: url)
         }
 
-        webView.load(URLRequest(url: url))
+        let pdfCreator = PDFViewController()
+        pdfCreator.urlString = url
+        self.viewController.addChild(pdfCreator)
+        self.webView.addSubview(pdfCreator.view)
+        pdfCreator.didMove(toParent: self.viewController)
+    }
 
+    func savePDF() {
         /// Create a print formatter object
-        let printFormatter = webView.viewPrintFormatter()
+        let printFormatter = wkWebView.viewPrintFormatter()
         /// Create renderer, which renders the print formatter's content on pages
         let renderer = UIPrintPageRenderer()
         renderer.addPrintFormatter(printFormatter, startingAtPageAt: 0)
@@ -65,69 +72,38 @@ enum PDFLoadError: Error {
 
         /// Close PDF graphics context
         UIGraphicsEndPDFContext()
-
-        //self.viewController.addChild(pdfCreator)
-        //self.webView.addSubview(pdfCreator.view)
-        //pdfCreator.didMove(toParent: self.viewController)
-    }
-
-    private func createPDF(url: String) -> Data {
-        let pdfMetaData = [
-            kCGPDFContextAuthor: "Guac"
-        ]
-
-        let format = UIGraphicsPDFRendererFormat()
-        /// set the PDF's meta data
-        format.documentInfo = pdfMetaData as [String: Any]
-
-        /// PDF files use a coordinate system with 72 points per inch
-        /// To create a document with a specific size, multiply the size in inches by 72 to get the number of points
-        let pageWidth = 8.5 * 72.0
-        let pageHeight = 11 * 72.0
-
-        /// Create a rectangle of the specified size
-        let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
-
-        /// Create a PDFRenderer object with the dimensions of the rectangle, and the format containing the metadata
-        let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
-
-        /// Create the PDF. The renderer creates a Core Graphics context that becomes the current context within
-        /// the block. Drawing done in this context will appear on the PDF.
-        let data = renderer.pdfData { (context) in
-            /// Starts a new PDF page. This must be invoked before givign any other drawing instructions.
-            context.beginPage()
-
-            let attributes = [
-                NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14)
-            ]
-
-            let text = "Hello I am your first PDF"
-            /// Draws the string to the current context.
-            text.draw(at: CGPoint(x: 0, y:0), withAttributes: attributes)
-        }
-
-        return data
     }
 }
 
 private class PDFViewController: UIViewController {
-    private let pdfView = PDFView()
-    public var documentData: Data?
+    private var pdfView: PDFView?
+    public var urlString: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        pdfView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(pdfView)
+        pdfView = PDFView(frame: self.view.bounds)
 
-        pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        if let pdfView {
+            pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            view.addSubview(pdfView)
 
-        if let data = documentData {
-            pdfView.document = PDFDocument(data: data)
+            /// Fit content in PDFView
             pdfView.autoScales = true
+
+            Task {
+                guard let urlString,
+                      let url = URL(string: urlString) else {
+                    throw PDFLoadError.invalidURL(url: urlString)
+                }
+
+                do {
+                    let (documentData, _) = try await URLSession.shared.data(from: url)
+                    pdfView.document = PDFDocument(data: documentData)
+                } catch {
+                    throw PDFLoadError.failedToLoadData(errorDescription: error.localizedDescription)
+                }
+            }
         }
     }
 }
