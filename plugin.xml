@@ -20,5 +20,6 @@
             </feature>
         </config-file>
         <source-file src="src/ios/PDFViewer.swift" />
+        <source-file src="src/ios/ContentView.swift" />
     </platform>
 </plugin>
