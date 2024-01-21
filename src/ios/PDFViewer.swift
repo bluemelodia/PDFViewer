@@ -2,7 +2,13 @@ import PDFKit
 import UIKit
 import WebKit
 
+enum PDFLoadError: Error {
+    case invalidURL(url: String?)
+}
+
 @objc(PDFViewer) class PDFViewer: CDVPlugin {
+    let webView = WKWebView()
+
     /// Creates a PDF and displays the contents of hte provided URL.
     /// - Parameter command: an object that represents the calling context and arguments
     ///     from the Cordova webView
@@ -14,10 +20,13 @@ import WebKit
 
         /// Extract the URL from the arguments passed in by JavaScript's exec function.
         if let url = command.arguments[0] as? String {
-            print("The url is: \(url)")
-            loadPDFWithURL(url: url)
+            do {
+                try loadPDFWithURL(url: url)
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
+            } catch {
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+            }
 
-            pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
         } else {
             pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
         }
@@ -26,13 +35,40 @@ import WebKit
         self.commandDelegate?.send(pluginResult, callbackId: command.callbackId)
     }
 
-    func loadPDFWithURL(url: String) {
-        let pdfCreator = PDFViewController()
-        pdfCreator.documentData = createPDF(url: url)
+    func loadPDFWithURL(url: String) throws {
+        /// Load a website into the web view
+        guard let url = URL(string: url) else {
+            throw PDFLoadError.invalidURL(url: url)
+        }
 
-        self.viewController.addChild(pdfCreator)
-        self.webView.addSubview(pdfCreator.view)
-        pdfCreator.didMove(toParent: self.viewController)
+        webView.load(URLRequest(url: url))
+
+        /// Create a print formatter object
+        let printFormatter = webView.viewPrintFormatter()
+        /// Create renderer, which renders the print formatter's content on pages
+        let renderer = UIPrintPageRenderer()
+        renderer.addPrintFormatter(printFormatter, startingAtPageAt: 0)
+
+        /// Create a data object to store PDF data
+        let pdfData = NSMutableData()
+        /// Start a PDF graphics context. This makes it the current drawing context, and
+        /// every drawing command after is captured and turned to PDF data.
+        UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+
+        /// Loop through the number of pages the renderer says it has, and on each
+        /// iteration it starts a new PDF page.
+        for i in 0..<renderer.numberOfPages {
+            UIGraphicsBeginPDFPage()
+            /// draw the content of the page
+            renderer.drawPage(at: i, in: UIGraphicsGetPDFContextBounds())
+        }
+
+        /// Close PDF graphics context
+        UIGraphicsEndPDFContext()
+
+        //self.viewController.addChild(pdfCreator)
+        //self.webView.addSubview(pdfCreator.view)
+        //pdfCreator.didMove(toParent: self.viewController)
     }
 
     private func createPDF(url: String) -> Data {
